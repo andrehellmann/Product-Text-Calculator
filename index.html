@@ -1,0 +1,1237 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WMF · Angebot KI-gestützte Produkttexte · netzstrategen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     netzstrategen Konfigurator — WMF Angebot
+     Single-File HTML, brand-blau Akzent, Live-Berechnung
+     ============================================================ */
+
+  :root {
+    --c-primary: #253FE4;
+    --c-primary-dark: #1a2cb0;
+    --c-primary-light: #E8EBFA;
+    --c-ink: #1F2A2D;
+    --c-text: #2C3E40;
+    --c-mute: #6B7280;
+    --c-line: #E5E7EB;
+    --c-bg: #F4F6F7;
+    --c-bg-soft: #FAFBFB;
+    --c-white: #FFFFFF;
+    --c-success: #1F8B5A;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,.04);
+    --shadow-md: 0 4px 14px rgba(0,0,0,.06);
+    --shadow-lg: 0 12px 32px rgba(0,0,0,.10);
+    --radius-sm: 6px;
+    --radius: 10px;
+    --radius-lg: 16px;
+    --font: 'Open Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: var(--font);
+    color: var(--c-text);
+    background: var(--c-bg);
+    line-height: 1.55;
+    font-size: 15px;
+    -webkit-font-smoothing: antialiased;
+    /* padding-bottom auf .main, weil body padding durch margin-collapsing geschluckt wird */
+  }
+  h1, h2, h3, h4 { color: var(--c-ink); font-weight: 700; line-height: 1.2; }
+  h1 { font-size: 42px; letter-spacing: -.5px; }
+  h2 { font-size: 26px; }
+  h3 { font-size: 19px; }
+
+  /* ---------- App Header ---------- */
+  .app-header {
+    background: var(--c-white);
+    border-bottom: 1px solid var(--c-line);
+    padding: 18px 40px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .logo {
+    font-weight: 800; font-size: 22px; color: var(--c-ink);
+    letter-spacing: -.5px;
+  }
+  .header-meta {
+    color: var(--c-mute); font-size: 13px;
+  }
+  .header-meta strong { color: var(--c-ink); }
+
+  /* ---------- Layout ---------- */
+  .main {
+    max-width: 1180px; margin: 0 auto; padding: 48px 40px 160px;
+  }
+  section + section { margin-top: 56px; }
+
+  /* ---------- Hero ---------- */
+  .hero { margin-bottom: 56px; }
+  .hero .eyebrow {
+    color: var(--c-primary-dark); font-weight: 700; font-size: 12px;
+    letter-spacing: 2px; text-transform: uppercase; margin-bottom: 14px;
+  }
+  .hero h1 { margin-bottom: 12px; }
+  .hero .sub {
+    color: var(--c-mute); font-size: 17px; margin-bottom: 20px; max-width: 720px;
+  }
+  .hero .specs {
+    display: flex; gap: 10px; flex-wrap: wrap;
+  }
+  .hero .spec {
+    background: var(--c-white); border: 1px solid var(--c-line);
+    border-radius: 100px; padding: 6px 14px;
+    font-size: 12px; color: var(--c-text); font-weight: 600;
+  }
+  .hero .spec strong { color: var(--c-ink); }
+
+  /* ---------- Section heading ---------- */
+  .section-head { margin-bottom: 24px; }
+  .section-head .num {
+    display: inline-block; color: var(--c-primary); font-weight: 800;
+    font-size: 13px; letter-spacing: 1px; margin-bottom: 8px;
+    font-variant-numeric: tabular-nums;
+  }
+  .section-head p {
+    color: var(--c-mute); font-size: 15px; max-width: 720px; margin-top: 8px;
+  }
+
+  /* ---------- Preset case-cards ---------- */
+  .case-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+  }
+  .case-card {
+    background: var(--c-white); border: 1px solid var(--c-line);
+    border-radius: var(--radius-lg);
+    padding: 28px; display: flex; flex-direction: column;
+    transition: all .15s; cursor: pointer; position: relative;
+    overflow: hidden;
+  }
+  .case-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0;
+    height: 4px; background: var(--c-line); transition: background .15s;
+  }
+  .case-card:hover {
+    border-color: var(--c-primary); transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+  .case-card:hover::before { background: var(--c-primary); }
+  .case-card.active {
+    border-color: var(--c-primary); box-shadow: var(--shadow-md);
+    background: var(--c-primary-light);
+  }
+  .case-card.active::before { background: var(--c-primary); }
+  .case-card .label {
+    color: var(--c-primary-dark); font-weight: 700; font-size: 11px;
+    letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px;
+  }
+  .case-card .badge-rec {
+    position: absolute; top: 18px; right: 18px;
+    background: var(--c-primary); color: #fff;
+    font-size: 10px; font-weight: 700; letter-spacing: .8px;
+    padding: 3px 8px; border-radius: 4px; text-transform: uppercase;
+  }
+  .case-card h3 { margin-bottom: 8px; font-size: 22px; }
+  .case-card .price {
+    font-size: 32px; font-weight: 800; color: var(--c-ink);
+    line-height: 1; margin: 12px 0 6px; font-variant-numeric: tabular-nums;
+  }
+  .case-card .per {
+    color: var(--c-mute); font-size: 12px; margin-bottom: 18px;
+    font-variant-numeric: tabular-nums;
+  }
+  .case-card .desc {
+    color: var(--c-text); font-size: 14px; margin-bottom: 18px; flex: 1;
+  }
+  .case-card .feats {
+    display: flex; flex-direction: column; gap: 6px; margin-bottom: 20px;
+  }
+  .case-card .feat {
+    font-size: 13px; color: var(--c-text);
+    padding-left: 22px; position: relative;
+  }
+  .case-card .feat::before {
+    content: '✓'; position: absolute; left: 0; top: 0;
+    color: var(--c-primary); font-weight: 800;
+  }
+  .case-card .feat.dim {
+    color: var(--c-mute);
+  }
+  .case-card .feat.dim::before { content: '—'; color: var(--c-line); }
+  .case-card .btn-select {
+    background: var(--c-white); color: var(--c-ink);
+    border: 1px solid var(--c-line);
+    padding: 12px 20px; border-radius: var(--radius);
+    font-family: var(--font); font-size: 14px; font-weight: 700;
+    cursor: pointer; transition: all .15s; text-align: center;
+  }
+  .case-card:hover .btn-select { border-color: var(--c-primary); color: var(--c-primary-dark); }
+  .case-card.active .btn-select {
+    background: var(--c-primary); color: #fff; border-color: var(--c-primary);
+  }
+
+  /* ---------- Stat-boxes ---------- */
+  .stats-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;
+  }
+  .stat-box {
+    background: var(--c-white); border: 1px solid var(--c-line);
+    border-radius: var(--radius); padding: 22px;
+  }
+  .stat-num {
+    font-size: 30px; font-weight: 800; color: var(--c-primary);
+    line-height: 1; font-variant-numeric: tabular-nums;
+    transition: color .2s;
+  }
+  .stat-label { font-size: 12px; color: var(--c-mute); margin-top: 8px; }
+  .stat-box.muted .stat-num { color: var(--c-mute); }
+
+  /* ---------- Lever (Modul-Karten) ---------- */
+  .lever-list { display: flex; flex-direction: column; gap: 12px; }
+  .lever {
+    background: var(--c-white); border: 1px solid var(--c-line);
+    border-radius: var(--radius); padding: 18px 20px;
+    transition: all .15s; cursor: pointer;
+    display: flex; align-items: flex-start; gap: 16px;
+  }
+  .lever:hover {
+    border-color: var(--c-primary-light);
+    background: var(--c-bg-soft);
+  }
+  .lever.active {
+    border-color: var(--c-primary);
+    background: var(--c-primary-light);
+  }
+  .lever-toggle {
+    appearance: none; width: 42px; height: 24px;
+    background: var(--c-line); border-radius: 100px;
+    position: relative; cursor: pointer; flex-shrink: 0;
+    transition: background .2s; margin-top: 2px;
+  }
+  .lever-toggle::after {
+    content: ''; position: absolute; top: 2px; left: 2px;
+    width: 20px; height: 20px; background: #fff;
+    border-radius: 50%; transition: transform .2s;
+    box-shadow: 0 1px 3px rgba(0,0,0,.15);
+  }
+  .lever-toggle:checked { background: var(--c-primary); }
+  .lever-toggle:checked::after { transform: translateX(18px); }
+  .lever-info { flex: 1; }
+  .lever-title {
+    font-weight: 700; color: var(--c-ink); font-size: 15px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .lever-code {
+    color: var(--c-primary-dark); font-weight: 800; font-size: 12px;
+    background: var(--c-primary-light); padding: 2px 8px;
+    border-radius: 4px; font-variant-numeric: tabular-nums;
+  }
+  .lever-desc {
+    color: var(--c-text); font-size: 13px; margin-top: 6px;
+    line-height: 1.5;
+  }
+  .lever-price {
+    font-weight: 800; color: var(--c-ink); font-size: 16px;
+    font-variant-numeric: tabular-nums;
+    flex-shrink: 0; text-align: right; min-width: 90px;
+    margin-top: 2px;
+  }
+  .lever.active .lever-price { color: var(--c-primary-dark); }
+
+  /* ---------- M6 als Optionsgruppe ---------- */
+  .lever-group {
+    background: var(--c-white); border: 1px solid var(--c-line);
+    border-radius: var(--radius); padding: 18px 20px;
+  }
+  .lever-group .group-head {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    gap: 16px; margin-bottom: 14px;
+  }
+  .lever-group .group-title {
+    font-weight: 700; color: var(--c-ink); font-size: 15px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .lever-group .group-desc {
+    color: var(--c-text); font-size: 13px; margin-top: 6px;
+  }
+  .radio-row {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+  }
+  .radio-opt {
+    border: 1px solid var(--c-line); border-radius: var(--radius-sm);
+    padding: 12px 14px; cursor: pointer; transition: all .15s;
+    background: var(--c-bg-soft);
+  }
+  .radio-opt:hover { border-color: var(--c-primary-light); }
+  .radio-opt input { display: none; }
+  .radio-opt-label {
+    display: flex; align-items: center; gap: 8px;
+    font-weight: 700; font-size: 13px; color: var(--c-ink);
+    margin-bottom: 4px;
+  }
+  .radio-opt-label::before {
+    content: ''; width: 14px; height: 14px; border-radius: 50%;
+    border: 2px solid var(--c-line); flex-shrink: 0;
+    transition: all .15s;
+  }
+  .radio-opt-sub {
+    font-size: 11px; color: var(--c-mute); padding-left: 22px;
+  }
+  .radio-opt-price {
+    font-size: 14px; font-weight: 800; color: var(--c-ink);
+    padding-left: 22px; font-variant-numeric: tabular-nums;
+    margin-top: 4px;
+  }
+  .radio-opt.active {
+    border-color: var(--c-primary); background: var(--c-primary-light);
+  }
+  .radio-opt.active .radio-opt-label::before {
+    border-color: var(--c-primary); background: var(--c-primary);
+    box-shadow: inset 0 0 0 3px #fff;
+  }
+  .radio-opt.active .radio-opt-price { color: var(--c-primary-dark); }
+
+  /* ---------- Marktvergleich ---------- */
+  .compare-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+  }
+  .compare-card {
+    background: var(--c-white); border: 1px solid var(--c-line);
+    border-radius: var(--radius); padding: 24px;
+  }
+  .compare-card.ns {
+    border-left: 4px solid var(--c-primary);
+    background: linear-gradient(135deg, #fff 0%, var(--c-primary-light) 100%);
+  }
+  .compare-card .topline {
+    color: var(--c-mute); font-size: 11px; text-transform: uppercase;
+    letter-spacing: 1.5px; font-weight: 700; margin-bottom: 10px;
+  }
+  .compare-card.ns .topline { color: var(--c-primary-dark); }
+  .compare-card .big-num {
+    font-size: 30px; font-weight: 800; color: var(--c-ink);
+    line-height: 1.1; font-variant-numeric: tabular-nums;
+  }
+  .compare-card .sub {
+    color: var(--c-mute); font-size: 13px; margin-top: 8px;
+  }
+  .delta-box {
+    background: var(--c-primary); color: #fff;
+    border-radius: var(--radius); padding: 20px 24px; margin-top: 16px;
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 16px;
+  }
+  .delta-box .label {
+    font-size: 13px; color: rgba(255,255,255,.85); letter-spacing: .3px;
+  }
+  .delta-box strong {
+    font-size: 22px; font-weight: 800; font-variant-numeric: tabular-nums;
+  }
+
+  /* ---------- Folgechargen ---------- */
+  .cost-breakdown {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+    margin-bottom: 20px;
+  }
+  .cost-breakdown.single { grid-template-columns: 1fr; }
+  .cost-item {
+    background: var(--c-white); border: 1px solid var(--c-line);
+    border-radius: var(--radius); padding: 22px 26px;
+  }
+  .cost-item.highlight {
+    border-left: 4px solid var(--c-primary);
+    background: linear-gradient(135deg, #fff 0%, var(--c-primary-light) 100%);
+  }
+  .cost-label {
+    color: var(--c-mute); font-size: 11px; text-transform: uppercase;
+    letter-spacing: 1.5px; font-weight: 700; margin-bottom: 10px;
+  }
+  .cost-item.highlight .cost-label { color: var(--c-primary-dark); }
+  .cost-val {
+    font-size: 32px; font-weight: 800; color: var(--c-ink);
+    line-height: 1; font-variant-numeric: tabular-nums;
+  }
+  .cost-item.highlight .cost-val { color: var(--c-primary-dark); }
+  .cost-sub { color: var(--c-mute); font-size: 12px; margin-top: 8px; }
+
+  .slider-box {
+    background: var(--c-white); border: 1px solid var(--c-line);
+    border-radius: var(--radius); padding: 24px 26px; margin-bottom: 20px;
+  }
+  .slider-head {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    gap: 24px; margin-bottom: 18px; flex-wrap: wrap;
+  }
+  .slider-label {
+    font-size: 16px; color: var(--c-text); font-weight: 600;
+  }
+  .slider-label strong {
+    color: var(--c-ink); font-weight: 800; font-size: 20px;
+    font-variant-numeric: tabular-nums;
+  }
+  .slider-sub { color: var(--c-mute); font-size: 12px; margin-top: 4px; }
+  .slider-total { text-align: right; }
+  .slider-total-label {
+    color: var(--c-mute); font-size: 11px; text-transform: uppercase;
+    letter-spacing: 1.5px; font-weight: 700; margin-bottom: 4px;
+  }
+  .slider-total-val {
+    font-size: 28px; font-weight: 800; color: var(--c-primary);
+    line-height: 1; font-variant-numeric: tabular-nums;
+  }
+  .slider-total-sub { color: var(--c-mute); font-size: 12px; margin-top: 4px; }
+
+  .follow-range {
+    -webkit-appearance: none; appearance: none;
+    width: 100%; height: 6px; border-radius: 3px;
+    background: var(--c-line); outline: none; cursor: pointer;
+  }
+  .follow-range::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none;
+    width: 22px; height: 22px; border-radius: 50%;
+    background: var(--c-primary); cursor: pointer;
+    border: 3px solid #fff; box-shadow: var(--shadow-md);
+    transition: transform .15s;
+  }
+  .follow-range::-webkit-slider-thumb:hover { transform: scale(1.1); }
+  .follow-range::-moz-range-thumb {
+    width: 22px; height: 22px; border-radius: 50%;
+    background: var(--c-primary); cursor: pointer;
+    border: 3px solid #fff; box-shadow: var(--shadow-md);
+  }
+  .range-marks {
+    position: relative; height: 16px; margin-top: 10px;
+  }
+  .range-marks span {
+    position: absolute; top: 0; transform: translateX(-50%);
+    color: var(--c-mute); font-size: 11px;
+    font-variant-numeric: tabular-nums; white-space: nowrap;
+  }
+  .range-marks span::before {
+    content: ''; position: absolute; top: -8px; left: 50%;
+    width: 1px; height: 5px; background: var(--c-line);
+    transform: translateX(-50%);
+  }
+
+  .follow-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;
+    margin-bottom: 20px;
+  }
+  .follow-card {
+    background: var(--c-white); border: 1px solid var(--c-line);
+    border-radius: var(--radius); padding: 20px 22px; text-align: center;
+  }
+  .follow-num {
+    color: var(--c-mute); font-size: 12px; text-transform: uppercase;
+    letter-spacing: 1.2px; font-weight: 700; margin-bottom: 10px;
+  }
+  .follow-price {
+    font-size: 26px; font-weight: 800; color: var(--c-ink);
+    line-height: 1; font-variant-numeric: tabular-nums;
+  }
+  .follow-per {
+    color: var(--c-primary-dark); font-size: 13px; font-weight: 700;
+    margin-top: 6px; font-variant-numeric: tabular-nums;
+  }
+
+  /* ---------- Hinweis-Box ---------- */
+  .note {
+    background: var(--c-bg-soft); border: 1px solid var(--c-line);
+    border-left: 3px solid var(--c-primary);
+    border-radius: var(--radius-sm); padding: 14px 18px; margin-top: 20px;
+    font-size: 13px; color: var(--c-text);
+  }
+  .note strong { color: var(--c-ink); }
+
+  /* ---------- Sticky Footer ---------- */
+  .sticky-footer {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: var(--c-ink); color: #fff;
+    box-shadow: 0 -8px 24px rgba(0,0,0,.12);
+    z-index: 50;
+  }
+  .footer-inner {
+    max-width: 1180px; margin: 0 auto; padding: 18px 40px;
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 24px;
+  }
+  .footer-left {
+    display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap;
+  }
+  .footer-label {
+    color: rgba(255,255,255,.65); font-size: 12px;
+    text-transform: uppercase; letter-spacing: 1.2px; font-weight: 700;
+  }
+  .footer-total {
+    font-size: 30px; font-weight: 800; color: #fff;
+    font-variant-numeric: tabular-nums; line-height: 1;
+  }
+  .footer-rabatt {
+    background: var(--c-primary); color: #fff;
+    font-size: 11px; font-weight: 700; letter-spacing: .5px;
+    padding: 4px 10px; border-radius: 4px;
+  }
+  .footer-right {
+    display: flex; align-items: center; gap: 18px;
+  }
+  .footer-meta {
+    color: rgba(255,255,255,.7); font-size: 12px; text-align: right;
+    max-width: 280px; line-height: 1.4;
+  }
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    background: var(--c-primary); color: #fff; border: 0;
+    padding: 14px 26px; border-radius: var(--radius);
+    font-family: var(--font); font-size: 15px; font-weight: 700;
+    cursor: pointer; transition: all .15s;
+  }
+  .btn:hover {
+    background: #fff; color: var(--c-primary-dark);
+    transform: translateY(-1px);
+  }
+  .btn-secondary {
+    background: transparent; color: #fff; border: 1px solid rgba(255,255,255,.3);
+  }
+  .btn-secondary:hover {
+    background: rgba(255,255,255,.1); border-color: #fff; color: #fff;
+    transform: none;
+  }
+
+  /* ---------- Print-Styles für PDF-Export ---------- */
+  @media print {
+    body { background: #fff; padding-bottom: 0; }
+    .app-header { padding: 12px 0; border-bottom: 2px solid var(--c-ink); }
+    .main { padding: 16px 0; max-width: 100%; }
+    .sticky-footer { display: none; }
+    .btn-select, .btn { display: none !important; }
+    section + section { margin-top: 32px; page-break-inside: avoid; }
+    .case-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+    .case-card { padding: 18px; transition: none; }
+    .case-card.active { background: var(--c-primary-light) !important; }
+    .lever { break-inside: avoid; }
+    h1 { font-size: 26px; }
+    h2 { font-size: 18px; }
+    .stat-num { font-size: 22px; }
+  }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 900px) {
+    .main { padding: 32px 20px 220px; }
+    .app-header { padding: 14px 20px; }
+    h1 { font-size: 32px; }
+    h2 { font-size: 22px; }
+    .case-grid { grid-template-columns: 1fr; }
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .compare-grid { grid-template-columns: 1fr; }
+    .radio-row { grid-template-columns: 1fr; }
+    .footer-inner { padding: 14px 20px; flex-direction: column; align-items: stretch; gap: 12px; }
+    .footer-right { justify-content: space-between; }
+    .footer-meta { display: none; }
+    /* main padding-bottom übernimmt das */
+  }
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <div class="logo">netzstrategen</div>
+  <div class="header-meta">Angebot · <strong>WMF / Groupe SEB</strong> · 20.05.2026</div>
+</header>
+
+<main class="main">
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="eyebrow">Konfigurator · Angebot</div>
+    <h1>KI-gestützte Produkttexte<br>für WMF &amp; HEPP</h1>
+    <p class="sub">Stellen Sie sich Ihr Paket zusammen oder wählen Sie eine unserer empfohlenen Varianten. Alle Preise verstehen sich netto, zzgl. gesetzlicher Mehrwertsteuer.</p>
+    <div class="specs">
+      <span class="spec"><strong>1.235</strong> Artikel</span>
+      <span class="spec">754 WMF · 481 HEPP</span>
+      <span class="spec">22 Kollektionen</span>
+      <span class="spec">DE + EN-UK</span>
+      <span class="spec">2.470 Texteinheiten</span>
+      <span class="spec">6 Wochen Laufzeit</span>
+    </div>
+  </section>
+
+  <!-- 1. Variante wählen -->
+  <section>
+    <div class="section-head">
+      <div class="num">01 · SCHNELLAUSWAHL</div>
+      <h2>Variante wählen</h2>
+      <p>Drei kuratierte Pakete als Startpunkt. Sie können die Module darunter jederzeit nachjustieren.</p>
+    </div>
+    <div class="case-grid">
+
+      <article class="case-card preset-card" data-preset="basis">
+        <div class="label">Variante 1</div>
+        <h3>Basis</h3>
+        <div class="price" data-price-basis>9.600 €</div>
+        <div class="per">~ 7,77 € / Artikel · ~ 3,89 € / Text</div>
+        <div class="desc">Schlanke Einstiegsvariante: Texte erstellen, Standards einhalten.</div>
+        <div class="feats">
+          <div class="feat">Setup &amp; Prompt-Engineering</div>
+          <div class="feat">Pilot 10 Artikel + 1 Korrekturrunde</div>
+          <div class="feat">Produktion DE + EN-UK</div>
+          <div class="feat">Basis-QA (5 % Stichprobe)</div>
+          <div class="feat dim">Brand-Voice-Leitfaden</div>
+          <div class="feat dim">Vollständiges Lektorat</div>
+        </div>
+        <button class="btn-select">Wählen</button>
+      </article>
+
+      <article class="case-card preset-card" data-preset="empfehlung">
+        <div class="badge-rec">Empfohlen</div>
+        <div class="label">Variante 2</div>
+        <h3>Empfehlung</h3>
+        <div class="price" data-price-empfehlung>20.430 €</div>
+        <div class="per">~ 16,54 € / Artikel · ~ 8,27 € / Text · inkl. 10 % Bündel-Rabatt</div>
+        <div class="desc">Sweet Spot: Markenkonsistenz und Qualität ohne Premium-Aufwand.</div>
+        <div class="feats">
+          <div class="feat">Komplettes Basis-Angebot</div>
+          <div class="feat">Brand-Voice-Leitfaden (WMF + HEPP)</div>
+          <div class="feat">Manuelle KI-Vorlagentexte</div>
+          <div class="feat">Marken- &amp; Materialglossar</div>
+          <div class="feat">Lektorat „Erweitert" (25 %)</div>
+          <div class="feat dim">SEO-Tiefenarbeit · 100 %-Lektorat</div>
+        </div>
+        <button class="btn-select">Wählen</button>
+      </article>
+
+      <article class="case-card preset-card" data-preset="premium">
+        <div class="label">Variante 3</div>
+        <h3>Premium-Komplett</h3>
+        <div class="price" data-price-premium>29.410 €</div>
+        <div class="per">~ 23,81 € / Artikel · ~ 11,91 € / Text · inkl. 15 % Bündel-Rabatt</div>
+        <div class="desc">Maximaler Markenanspruch und vollständiges Asset-Paket für Folgeprojekte.</div>
+        <div class="feats">
+          <div class="feat">Alle Module enthalten</div>
+          <div class="feat">SEO- &amp; Keyword-Leitfaden je Marke</div>
+          <div class="feat">Vollständiges Lektorat (100 %)</div>
+          <div class="feat">LLM-Vergleichspilot</div>
+          <div class="feat">Folgekosten ab ~ 3 €/Artikel</div>
+          <div class="feat">Komplette Asset-Übergabe</div>
+        </div>
+        <button class="btn-select">Wählen</button>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- 2. Stats -->
+  <section>
+    <div class="section-head">
+      <div class="num">02 · IHRE KONFIGURATION</div>
+      <h2>Live-Kalkulation</h2>
+      <p>Aktualisiert sich automatisch, sobald Sie Module hinzufügen oder entfernen.</p>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-box">
+        <div class="stat-num" id="stat-total">9.600 €</div>
+        <div class="stat-label">Gesamtinvestition netto</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num" id="stat-per-article">7,77 €</div>
+        <div class="stat-label">pro Artikel (DE + EN)</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num" id="stat-per-text">3,89 €</div>
+        <div class="stat-label">pro Texteinheit je Sprache</div>
+      </div>
+      <div class="stat-box" id="stat-followup-box">
+        <div class="stat-num" id="stat-followup">—</div>
+        <div class="stat-label">Folgekosten pro neuem Artikel</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. Module -->
+  <section>
+    <div class="section-head">
+      <div class="num">03 · QUALITÄT JUSTIEREN</div>
+      <h2>Module zur Qualitätssteigerung</h2>
+      <p>Jedes Modul ist einzeln zubuchbar. Ab 3 Modulen gewähren wir gestaffelte Bündel-Rabatte bis 15 %.</p>
+    </div>
+
+    <div class="lever-list">
+
+      <label class="lever" data-lever="m1">
+        <input type="checkbox" class="lever-toggle" data-module="m1" data-price="4800">
+        <div class="lever-info">
+          <div class="lever-title"><span class="lever-code">M1</span> Brand-Voice-Leitfaden (WMF + HEPP)</div>
+          <div class="lever-desc">Tonality-Profile je Marke aus Bestandsmaterial. Asynchron, ohne Workshop-Aufwand bei WMF. Bleibt als Asset bei WMF.</div>
+        </div>
+        <div class="lever-price">+ 4.800 €</div>
+      </label>
+
+      <label class="lever" data-lever="m2">
+        <input type="checkbox" class="lever-toggle" data-module="m2" data-price="2900">
+        <div class="lever-info">
+          <div class="lever-title"><span class="lever-code">M2</span> Manuelle Beispieltexte als KI-Vorlagen</div>
+          <div class="lever-desc">6 Vorzeigetexte (3 WMF + 3 HEPP) in DE + EN-UK als Few-Shot-Beispiele. Stärkster Qualitätshebel für Konsistenz.</div>
+        </div>
+        <div class="lever-price">+ 2.900 €</div>
+      </label>
+
+      <label class="lever" data-lever="m3">
+        <input type="checkbox" class="lever-toggle" data-module="m3" data-price="4800">
+        <div class="lever-info">
+          <div class="lever-title"><span class="lever-code">M3</span> SEO- &amp; Keyword-Leitfaden (WMF + HEPP)</div>
+          <div class="lever-desc">Keyword-Recherche, Suchintention-Mapping, Strukturvorgaben je Marke. Eigenständiges SEO-Asset über das Projekt hinaus.</div>
+        </div>
+        <div class="lever-price">+ 4.800 €</div>
+      </label>
+
+      <label class="lever" data-lever="m4">
+        <input type="checkbox" class="lever-toggle" data-module="m4" data-price="1200">
+        <div class="lever-info">
+          <div class="lever-title"><span class="lever-code">M4</span> Fehlende Keywords ergänzen</div>
+          <div class="lever-desc">~ 130 Artikel ohne Keywords (gelb markiert). Recherche und Eintragen vor Produktionsstart, für vollständige Datenbasis.</div>
+        </div>
+        <div class="lever-price">+ 1.200 €</div>
+      </label>
+
+      <label class="lever" data-lever="m5">
+        <input type="checkbox" class="lever-toggle" data-module="m5" data-price="2400">
+        <div class="lever-info">
+          <div class="lever-title"><span class="lever-code">M5</span> Marken- &amp; Materialglossar</div>
+          <div class="lever-desc">Strukturiertes Glossar (Cromargan®, versilbert, Politur, etc.) DE + EN-UK mit Verwendungsregeln. Konsistenz über alle Texte hinweg.</div>
+        </div>
+        <div class="lever-price">+ 2.400 €</div>
+      </label>
+
+      <!-- M6 als Optionsgruppe -->
+      <div class="lever-group" data-lever="m6">
+        <div class="group-head">
+          <div>
+            <div class="group-title"><span class="lever-code">M6</span> Lektorat — Tiefe wählen</div>
+            <div class="group-desc">Die Basis-QA (5 % Stichprobe) ist im Grundpreis enthalten. Höhere Stufen erweitern Sichtungstiefe und Korrekturläufe.</div>
+          </div>
+        </div>
+        <div class="radio-row">
+          <label class="radio-opt active" data-m6="none">
+            <input type="radio" name="m6" value="none" checked>
+            <div class="radio-opt-label">Basis-QA</div>
+            <div class="radio-opt-sub">5 % Stichprobe, automatisierte Checks</div>
+            <div class="radio-opt-price">im Grundpreis</div>
+          </label>
+          <label class="radio-opt" data-m6="a">
+            <input type="radio" name="m6" value="a">
+            <div class="radio-opt-label">Erweitert</div>
+            <div class="radio-opt-sub">25 % Sichtung, zweite Korrekturrunde</div>
+            <div class="radio-opt-price">+ 3.000 €</div>
+          </label>
+          <label class="radio-opt" data-m6="b">
+            <input type="radio" name="m6" value="b">
+            <div class="radio-opt-label">Vollständig</div>
+            <div class="radio-opt-sub">100 % Sichtung aller 2.470 Texte</div>
+            <div class="radio-opt-price">+ 6.000 €</div>
+          </label>
+        </div>
+      </div>
+
+      <label class="lever" data-lever="m7">
+        <input type="checkbox" class="lever-toggle" data-module="m7" data-price="2900">
+        <div class="lever-info">
+          <div class="lever-title"><span class="lever-code">M7</span> LLM-Vergleichspilot</div>
+          <div class="lever-desc">Pilot mit 2-3 führenden Sprachmodellen (Claude, GPT, Gemini), Vergleichsmatrix und Empfehlung für künftige Produktionen.</div>
+        </div>
+        <div class="lever-price">+ 2.900 €</div>
+      </label>
+
+    </div>
+
+    <div class="note">
+      <strong>Bündel-Rabatt-Logik:</strong> 1–2 Module 0 % · 3 Module 5 % · 4–5 Module 10 % · 6 Module 12 % · alle 7 Module 15 %. Bei abweichenden Wünschen sprechen wir gerne über individuelle Konditionen.
+    </div>
+  </section>
+
+  <!-- 4. Marktvergleich -->
+  <section>
+    <div class="section-head">
+      <div class="num">04 · MARKTVERGLEICH</div>
+      <h2>Klassische Texterstellung im Vergleich</h2>
+      <p>Erfahrungswerte aus dem DACH-Markt für vergleichbare Erstellungen über Copywriter und Marken-Agenturen, 2025–2026.</p>
+    </div>
+    <div class="compare-grid">
+      <div class="compare-card">
+        <div class="topline">Klassische Marken-Agentur</div>
+        <div class="big-num">130.000 – 240.000 €</div>
+        <div class="sub">Standard mit Brand-Voice und SEO · 4–8 Monate Laufzeit · ~ 105–195 € je Artikel inkl. Übersetzung</div>
+      </div>
+      <div class="compare-card ns">
+        <div class="topline">Ihr Angebot · netzstrategen</div>
+        <div class="big-num" id="compare-ns">9.600 €</div>
+        <div class="sub" id="compare-ns-sub">Basis-Variante · 6 Wochen Laufzeit · ~ 7,77 € je Artikel inkl. EN-UK</div>
+      </div>
+    </div>
+    <div class="delta-box">
+      <div>
+        <div class="label">Ihre Ersparnis gegenüber klassischer Agentur (untere Kante)</div>
+        <strong id="savings">~ 120.400 € · Faktor 14× günstiger</strong>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. Folgechargen -->
+  <section>
+    <div class="section-head">
+      <div class="num">05 · FOLGECHARGEN</div>
+      <h2>Folgekosten nach der einmaligen Einrichtung</h2>
+      <p>Wenn die Pipeline, Brand-Voice-Profile und Glossare einmal stehen, kostet jede weitere Texterstellung nur noch die variablen Anteile. Je mehr Assets im Initial-Projekt aufgebaut werden, desto günstiger werden Folgechargen.</p>
+    </div>
+
+    <!-- Variable Kostenkomponenten -->
+    <div class="cost-breakdown single">
+      <div class="cost-item highlight">
+        <div class="cost-label">Folgekosten pro Artikel · DE + EN-UK</div>
+        <div class="cost-val" id="follow-per-article">~ 7,00 €</div>
+        <div class="cost-sub" id="follow-per-article-sub">LLM-Inferenz · Pipeline-Operations · Konsistenz-Checks · Stichproben-Lektorat (25 %)</div>
+      </div>
+    </div>
+
+    <!-- Slider -->
+    <div class="slider-box">
+      <div class="slider-head">
+        <div>
+          <div class="slider-label">Folgecharge: <strong id="follow-count">500</strong> neue Artikel</div>
+          <div class="slider-sub">Schiebe den Regler, um deine Wunschmenge zu wählen. Mindestcharge 100 Artikel.</div>
+        </div>
+        <div class="slider-total">
+          <div class="slider-total-label">Folgekosten gesamt</div>
+          <div class="slider-total-val" id="follow-total">3.500 €</div>
+          <div class="slider-total-sub"><span id="follow-pp">7,00 €</span> pro Artikel · 4–6 Wochen Laufzeit</div>
+        </div>
+      </div>
+      <input type="range" id="follow-range" min="100" max="5000" step="50" value="500" class="follow-range">
+      <div class="range-marks">
+        <span style="left: 0%">100</span>
+        <span style="left: 18.4%">1.000</span>
+        <span style="left: 48.9%">2.500</span>
+        <span style="left: 100%">5.000</span>
+      </div>
+    </div>
+
+    <!-- 3 Quick-Examples -->
+    <div class="follow-grid">
+      <div class="follow-card">
+        <div class="follow-num">100 Artikel</div>
+        <div class="follow-price" id="fp-100">700 €</div>
+        <div class="follow-per" id="fp-100-pp">7,00 € / Artikel</div>
+      </div>
+      <div class="follow-card">
+        <div class="follow-num">500 Artikel</div>
+        <div class="follow-price" id="fp-500">3.500 €</div>
+        <div class="follow-per" id="fp-500-pp">7,00 € / Artikel</div>
+      </div>
+      <div class="follow-card">
+        <div class="follow-num">1.000 Artikel</div>
+        <div class="follow-price" id="fp-1000">7.000 €</div>
+        <div class="follow-per" id="fp-1000-pp">7,00 € / Artikel</div>
+      </div>
+    </div>
+
+    <!-- Vergleich -->
+    <div class="delta-box">
+      <div>
+        <div class="label">Klassische Agentur für die gleiche Folgemenge (untere Kante)</div>
+        <strong id="follow-savings">~ 71.500 € · Faktor 21× günstiger</strong>
+      </div>
+    </div>
+
+    <div class="note">
+      <strong>Warum so viel günstiger?</strong> Setup, Brand-Voice-Aufbau, Prompt-Engineering, SEO-Leitfaden und Glossar wurden im Initial-Projekt einmalig erstellt. Folgechargen nutzen diese Assets — es bleiben nur LLM-Inferenz, Pipeline-Operations und Stichproben-Lektorat. Je mehr Setup-Module im Initial-Projekt enthalten waren, desto niedriger der Folgepreis.
+    </div>
+  </section>
+
+  <!-- 6. Nächste Schritte -->
+  <section>
+    <div class="section-head">
+      <div class="num">06 · NÄCHSTE SCHRITTE</div>
+      <h2>So geht es weiter</h2>
+    </div>
+    <div class="compare-grid">
+      <div class="compare-card">
+        <div class="topline">Was wir von WMF brauchen</div>
+        <div style="font-size: 14px; color: var(--c-text); line-height: 1.7;">
+          → Bestätigung der Excel-Datenbasis<br>
+          → Markenleitfäden (soweit vorhanden)<br>
+          → 5–10 Beispieltexte je Marke (DE)<br>
+          → Ansprechpartner für Pilot-Freigabe<br>
+          → Klarstellung EN-UK-Spezifika
+        </div>
+      </div>
+      <div class="compare-card ns">
+        <div class="topline">Was wir liefern</div>
+        <div style="font-size: 14px; color: var(--c-text); line-height: 1.7;">
+          → Komplette Texterstellung &amp; QA<br>
+          → Übergabe in der Original-Excel-Struktur<br>
+          → Methodik-Dokumentation<br>
+          → 6 Wochen Projektlaufzeit<br>
+          → Folgeprojekte zu deutlich niedrigeren Preisen
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- Sticky Footer -->
+<div class="sticky-footer">
+  <div class="footer-inner">
+    <div class="footer-left">
+      <span class="footer-label">Gesamt</span>
+      <span class="footer-total" id="footer-total">9.600 €</span>
+      <span class="footer-rabatt" id="footer-rabatt" style="display:none">0 %</span>
+    </div>
+    <div class="footer-right">
+      <span class="footer-meta" id="footer-meta">Basis-Variante · 1.235 Artikel × DE + EN-UK</span>
+      <button class="btn-secondary btn" onclick="window.print()">Drucken</button>
+      <button class="btn" onclick="requestOffer()">Angebot anfordern</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ============================================================
+  // Daten & Logik
+  // ============================================================
+  const MODULES = {
+    m1: 4800, m2: 2900, m3: 4800, m4: 1200, m5: 2400, m7: 2900,
+  };
+  const M6 = { none: 0, a: 3000, b: 6000 };
+  const BASIS = 9600;
+  const ARTICLES = 1235;
+  const TEXTS = 2470;
+  const MARKET_LOW = 130000;
+
+  // Folgepreis pro Artikel (DE + EN-UK, alles inkl.) — hängt von aufgebauten Assets ab
+  // Konsistent zur Original-Kalkulation: Basis ~7 €, Empfehlung ~4-5 €, Premium ~3-4 €
+  function followupPerArticle(mods, m6) {
+    let base = 7;
+    if (mods.includes('m1')) base -= 0.5; // Brand-Voice
+    if (mods.includes('m2')) base -= 1.0; // Few-Shot-Beispiele (stärkster Hebel)
+    if (mods.includes('m3')) base -= 0.5; // SEO-Leitfaden
+    if (mods.includes('m5')) base -= 0.5; // Glossar
+    if (mods.includes('m7')) base -= 0.5; // LLM-Optimierung
+    if (m6 === 'a') base += 0.5;          // Erweitertes Lektorat als Folge-Standard
+    if (m6 === 'b') base += 1.0;          // Vollständiges Lektorat
+    return Math.max(3, Math.round(base * 2) / 2); // auf 0,5 € runden, Minimum 3 €
+  }
+
+  function followupTotal(count, perArticle) {
+    return count * perArticle;
+  }
+
+  const PRESETS = {
+    basis:      { modules: [],                          m6: 'none' },
+    empfehlung: { modules: ['m1','m2','m5'],            m6: 'a'    },
+    premium:    { modules: ['m1','m2','m3','m4','m5','m7'], m6: 'b' },
+  };
+
+  function discount(count) {
+    if (count <= 2) return 0;
+    if (count === 3) return 0.05;
+    if (count <= 5) return 0.10;
+    if (count === 6) return 0.12;
+    return 0.15;
+  }
+
+  const fmtEUR = (n, dp = 0) => new Intl.NumberFormat('de-DE', {
+    style: 'currency', currency: 'EUR',
+    minimumFractionDigits: dp, maximumFractionDigits: dp,
+  }).format(n);
+
+  // ============================================================
+  // Update-Funktion
+  // ============================================================
+  function update() {
+    // Module sammeln
+    let modSum = 0, modCount = 0;
+    const activeModules = [];
+    document.querySelectorAll('.lever-toggle').forEach(cb => {
+      const lever = cb.closest('.lever');
+      if (cb.checked) {
+        modSum += parseInt(cb.dataset.price);
+        modCount++;
+        activeModules.push(cb.dataset.module);
+        lever.classList.add('active');
+      } else {
+        lever.classList.remove('active');
+      }
+    });
+
+    // M6
+    const m6Val = document.querySelector('input[name="m6"]:checked').value;
+    modSum += M6[m6Val];
+    if (m6Val !== 'none') modCount++;
+    document.querySelectorAll('.radio-opt').forEach(r => {
+      r.classList.toggle('active', r.dataset.m6 === m6Val);
+    });
+
+    // Summen
+    const subtotal = BASIS + modSum;
+    const d = discount(modCount);
+    const total = Math.round(subtotal * (1 - d));
+
+    // Stats
+    document.getElementById('stat-total').textContent = fmtEUR(total);
+    document.getElementById('stat-per-article').textContent = fmtEUR(total / ARTICLES, 2);
+    document.getElementById('stat-per-text').textContent = fmtEUR(total / TEXTS, 2);
+    const followupBox = document.getElementById('stat-followup-box');
+    if (modCount >= 3) {
+      document.getElementById('stat-followup').textContent = (modCount >= 6) ? '~ 3–5 €' : '~ 4–6 €';
+      followupBox.classList.remove('muted');
+    } else {
+      document.getElementById('stat-followup').textContent = '—';
+      followupBox.classList.add('muted');
+    }
+
+    // Footer
+    document.getElementById('footer-total').textContent = fmtEUR(total);
+    const rabattEl = document.getElementById('footer-rabatt');
+    if (d > 0) {
+      rabattEl.style.display = '';
+      rabattEl.textContent = `– ${Math.round(d * 100)} % Bündel-Rabatt`;
+    } else {
+      rabattEl.style.display = 'none';
+    }
+
+    // Variante erkennen
+    let varianteName = 'individuelle Konfiguration';
+    let activeCard = null;
+    for (const [name, preset] of Object.entries(PRESETS)) {
+      const sameMods = activeModules.length === preset.modules.length
+        && preset.modules.every(m => activeModules.includes(m));
+      const sameM6 = m6Val === preset.m6;
+      if (sameMods && sameM6) {
+        varianteName = { basis: 'Basis-Variante', empfehlung: 'Empfehlung', premium: 'Premium-Komplett' }[name];
+        activeCard = name;
+        break;
+      }
+    }
+    const bausteine = modCount + 1;
+    const bausteineLabel = bausteine === 1 ? 'Baustein' : 'Bausteine';
+    document.getElementById('footer-meta').textContent = `${varianteName} · 1.235 Artikel × DE + EN-UK · ${bausteine} ${bausteineLabel}`;
+
+    // Aktive Preset-Card markieren
+    document.querySelectorAll('.preset-card').forEach(card => {
+      card.classList.toggle('active', card.dataset.preset === activeCard);
+    });
+
+    // Marktvergleich
+    document.getElementById('compare-ns').textContent = fmtEUR(total);
+    document.getElementById('compare-ns-sub').textContent = `${varianteName} · 6 Wochen Laufzeit · ${fmtEUR(total/ARTICLES, 2)} je Artikel inkl. EN-UK`;
+    const savings = MARKET_LOW - total;
+    const factor = Math.round(MARKET_LOW / total);
+    document.getElementById('savings').textContent = `~ ${fmtEUR(savings)} · Faktor ${factor}× günstiger`;
+
+    // Folgechargen aktualisieren
+    updateFollowup(activeModules, m6Val);
+  }
+
+  // ============================================================
+  // Folgechargen-Logik
+  // ============================================================
+  function updateFollowup(mods, m6) {
+    const perArt = followupPerArticle(mods, m6);
+    const fmtArt = fmtEUR(perArt, perArt % 1 === 0 ? 0 : 2);
+
+    // Komponenten-Box
+    document.getElementById('follow-per-article').textContent = `${fmtArt}`;
+
+    // Slider-Wert
+    const count = parseInt(document.getElementById('follow-range').value);
+    const total = followupTotal(count, perArt);
+    document.getElementById('follow-count').textContent = count.toLocaleString('de-DE');
+    document.getElementById('follow-total').textContent = fmtEUR(total);
+    document.getElementById('follow-pp').textContent = fmtEUR(total / count, 2);
+
+    // Quick-Examples
+    [100, 500, 1000].forEach(n => {
+      const t = followupTotal(n, perArt);
+      document.getElementById(`fp-${n}`).textContent = fmtEUR(t);
+      document.getElementById(`fp-${n}-pp`).textContent = `${fmtEUR(t/n, 2)} / Artikel`;
+    });
+
+    // Markt-Vergleich für die Slider-Menge
+    const marketAvgPerArticle = 150; // ~ Mitte der Bandbreite 105-195 €
+    const marketCost = count * marketAvgPerArticle;
+    const fSavings = marketCost - total;
+    const fFactor = Math.round(marketCost / total);
+    document.getElementById('follow-savings').textContent =
+      `~ ${fmtEUR(fSavings)} · Faktor ${fFactor}× günstiger`;
+  }
+
+  // Slider-Event
+  document.getElementById('follow-range').addEventListener('input', () => {
+    // aktiven Module-State neu durchgehen
+    const activeModules = [];
+    document.querySelectorAll('.lever-toggle:checked').forEach(cb => {
+      activeModules.push(cb.dataset.module);
+    });
+    const m6Val = document.querySelector('input[name="m6"]:checked').value;
+    updateFollowup(activeModules, m6Val);
+  });
+
+  // ============================================================
+  // Preset-Auswahl
+  // ============================================================
+  function applyPreset(name) {
+    const preset = PRESETS[name];
+    document.querySelectorAll('.lever-toggle').forEach(cb => {
+      cb.checked = preset.modules.includes(cb.dataset.module);
+    });
+    document.querySelector(`input[name="m6"][value="${preset.m6}"]`).checked = true;
+    update();
+    // Scrollen zum Konfigurations-Bereich
+    document.getElementById('stat-total').closest('section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  // ============================================================
+  // Event-Bindings
+  // ============================================================
+  document.querySelectorAll('.lever-toggle, input[name="m6"]').forEach(el => {
+    el.addEventListener('change', update);
+  });
+
+  document.querySelectorAll('.preset-card').forEach(card => {
+    card.addEventListener('click', (e) => {
+      // Nur reagieren, wenn nicht auf einen anderen interaktiven Element geklickt
+      applyPreset(card.dataset.preset);
+    });
+  });
+
+  // ============================================================
+  // Angebots-Anforderung: Mail mit kompletter Konfiguration
+  // ============================================================
+  const MODULE_NAMES = {
+    m1: 'Brand-Voice-Leitfaden (WMF + HEPP)',
+    m2: 'Manuelle Beispieltexte als KI-Vorlagen',
+    m3: 'SEO- & Keyword-Leitfaden (WMF + HEPP)',
+    m4: 'Fehlende Keywords ergaenzen',
+    m5: 'Marken- & Materialglossar',
+    m7: 'LLM-Vergleichspilot',
+  };
+  const M6_LABELS = {
+    none: 'Basis-QA (5 % Stichprobe)',
+    a:    'Erweitert (25 % Sichtung)',
+    b:    'Vollstaendig (100 % Sichtung)',
+  };
+
+  // pad: rechts auffuellen, nicht beschneiden
+  function pad(s, n) { return s + ' '.repeat(Math.max(1, n - s.length)); }
+  // padR: links auffuellen (fuer rechtsbuendige Preise)
+  function padR(s, n) { return ' '.repeat(Math.max(0, n - s.length)) + s; }
+
+  function buildMailBody() {
+    // Aktuelle Konfiguration auslesen
+    const activeMods = [];
+    document.querySelectorAll('.lever-toggle:checked').forEach(cb => activeMods.push(cb.dataset.module));
+    const m6Val = document.querySelector('input[name="m6"]:checked').value;
+
+    // Summen
+    let modSum = 0;
+    activeMods.forEach(m => modSum += MODULES[m]);
+    modSum += M6[m6Val];
+    const subtotal = BASIS + modSum;
+    const d = discount(activeMods.length + (m6Val !== 'none' ? 1 : 0));
+    const rabatt = subtotal * d;
+    const total = Math.round(subtotal - rabatt);
+
+    // Variante erkennen
+    let varianteName = 'Individuelle Konfiguration';
+    for (const [name, preset] of Object.entries(PRESETS)) {
+      const sameMods = activeMods.length === preset.modules.length
+        && preset.modules.every(m => activeMods.includes(m));
+      if (sameMods && m6Val === preset.m6) {
+        varianteName = { basis: 'Basis', empfehlung: 'Empfehlung', premium: 'Premium-Komplett' }[name];
+        break;
+      }
+    }
+
+    const perArt = followupPerArticle(activeMods, m6Val);
+    const d_ = new Date();
+    const today = String(d_.getDate()).padStart(2,'0') + '.' +
+                  String(d_.getMonth()+1).padStart(2,'0') + '.' + d_.getFullYear();
+    const fmt = n => n.toLocaleString('de-DE') + ' EUR';
+    const fmt2 = n => n.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' EUR';
+
+    // Body zusammenbauen
+    let body = '';
+    body += 'ANGEBOTSANFORDERUNG  -  WMF / Groupe SEB\n';
+    body += 'KI-gestuetzte Produkttexte fuer WMF & HEPP\n';
+    body += '==========================================\n\n';
+
+    body += 'Variante:                ' + varianteName + '\n';
+    body += 'Gesamt netto:            ' + fmt(total) + (d > 0 ? '   (inkl. ' + Math.round(d * 100) + ' % Buendel-Rabatt)' : '') + '\n';
+    body += 'Pro Artikel (DE+EN):     ' + fmt2(total / ARTICLES) + '\n';
+    body += 'Pro Texteinheit:         ' + fmt2(total / TEXTS) + '\n';
+    body += 'Folgepreis pro Artikel:  ' + fmt2(perArt) + '\n\n';
+
+    body += 'BAUSTEINE\n';
+    body += '---------\n';
+    body += '[x] ' + pad('Basis-Angebot', 50) + padR(fmt(BASIS), 14) + '\n';
+
+    // M1-M5
+    ['m1','m2','m3','m4','m5'].forEach(m => {
+      const checked = activeMods.includes(m);
+      const name = m.toUpperCase() + '  ' + MODULE_NAMES[m];
+      const price = checked ? fmt(MODULES[m]) : '—';
+      body += (checked ? '[x] ' : '[ ] ') + pad(name, 50) + padR(price, 14) + '\n';
+    });
+    // M6 als Optionsgruppe (immer mit Stand)
+    body += '    ' + pad('M6  Lektorat: ' + M6_LABELS[m6Val], 50) + padR(M6[m6Val] > 0 ? fmt(M6[m6Val]) : 'im Grundpreis', 14) + '\n';
+    // M7
+    const m7Checked = activeMods.includes('m7');
+    body += (m7Checked ? '[x] ' : '[ ] ') + pad('M7  ' + MODULE_NAMES.m7, 50) + padR(m7Checked ? fmt(MODULES.m7) : '—', 14) + '\n';
+
+    body += '\n';
+    body += pad('Zwischensumme', 54) + padR(fmt(subtotal), 14) + '\n';
+    if (d > 0) {
+      body += pad('Buendel-Rabatt (-' + Math.round(d * 100) + ' %)', 54) + padR('- ' + fmt(Math.round(rabatt)), 14) + '\n';
+    }
+    body += pad('Gesamt netto', 54) + padR(fmt(total), 14) + '\n\n';
+
+    body += 'PROJEKT-ECKDATEN\n';
+    body += '----------------\n';
+    body += 'Artikel gesamt:          1.235 (WMF 754 + HEPP 481)\n';
+    body += 'Kollektionen:            22\n';
+    body += 'Sprachen:                Deutsch + Englisch (UK)\n';
+    body += 'Texteinheiten:           2.470 (Headline + Fliesstext je Sprache)\n';
+    body += 'Laufzeit:                6 Wochen ab Kick-off\n\n';
+
+    body += 'Datum der Konfiguration: ' + today + '\n';
+    body += 'Konfigurator-URL:        wmf-angebot-konfigurator.html\n\n';
+
+    body += 'Alle Preise netto, zzgl. gesetzlicher Mehrwertsteuer.\n';
+    body += 'Angebot gueltig 8 Wochen ab Ausstellungsdatum.\n';
+
+    return body;
+  }
+
+  function requestOffer() {
+    const body = buildMailBody();
+    const subject = 'Angebotsanforderung WMF - KI-Produkttexte';
+    window.location.href = 'mailto:andre@netzstrategen.com'
+      + '?subject=' + encodeURIComponent(subject)
+      + '&body=' + encodeURIComponent(body);
+  }
+
+  // Initial: Basis als aktiv markieren (ohne Scroll)
+  function init() {
+    update();
+  }
+  init();
+</script>
+
+</body>
+</html>
