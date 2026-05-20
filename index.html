@@ -92,6 +92,33 @@
   }
   .hero .spec strong { color: var(--c-ink); }
 
+  /* ---------- Hero-Download ---------- */
+  .hero-download {
+    display: inline-flex; align-items: center; gap: 12px;
+    margin-top: 24px;
+    color: var(--c-primary-dark);
+    text-decoration: none; font-weight: 700; font-size: 14px;
+    padding: 11px 18px;
+    border: 1px solid var(--c-primary);
+    border-radius: var(--radius);
+    background: var(--c-white);
+    transition: all .15s;
+  }
+  .hero-download:hover {
+    background: var(--c-primary); color: #fff;
+    transform: translateY(-1px); box-shadow: var(--shadow-md);
+  }
+  .hero-download .ico {
+    width: 18px; height: 18px; display: inline-flex;
+    align-items: center; justify-content: center;
+    border: 1.5px solid currentColor; border-radius: 50%;
+    font-size: 11px; font-weight: 800; line-height: 1;
+  }
+  .hero-download .sub {
+    color: var(--c-mute); font-weight: 400; font-size: 14px;
+  }
+  .hero-download:hover .sub { color: rgba(255,255,255,.85); }
+
   /* ---------- Section heading ---------- */
   .section-head { margin-bottom: 24px; }
   .section-head .num {
@@ -560,6 +587,10 @@
       <span class="spec">2.470 Texteinheiten</span>
       <span class="spec">6 Wochen Laufzeit</span>
     </div>
+    <a class="hero-download" href="WMF_Angebot_KI-Produkttexte.pdf" download>
+      <span class="ico">↓</span>
+      <span>Vollständiges Angebots-PDF</span>
+    </a>
   </section>
 
   <!-- 1. Variante wählen -->
@@ -894,7 +925,7 @@
     </div>
     <div class="footer-right">
       <span class="footer-meta" id="footer-meta">Basis-Variante · 1.235 Artikel × DE + EN-UK</span>
-      <button class="btn-secondary btn" onclick="window.print()">Drucken</button>
+      <a class="btn-secondary btn" href="WMF_Angebot_KI-Produkttexte.pdf" download>Angebot (PDF)</a>
       <button class="btn" onclick="requestOffer()">Angebot anfordern</button>
     </div>
   </div>
